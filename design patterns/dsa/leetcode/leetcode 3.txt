@@ -1,0 +1,64 @@
+Given a string s, find the length of the longest substring without duplicate characters.
+
+ 
+
+Example 1:
+
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+Example 2:
+
+Input: s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3.
+Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
+
+Approach:
+
+1. Brute Force O(n^3) - Generate all substrings and find the longest substring with unique characters 
+2. Sliding Window O(n) - 
+
+                Maintain window [left, right] with only unique chars.
+
+                Expand right.
+
+                If duplicate → shrink left until unique again.
+
+                Update max_len
+
+                Code:
+                    char_set = set()
+                    left, max_len = 0, 0
+
+                    for right in range(len(s)):
+                        while s[right] in char_set:
+                            char_set.remove(s[left])
+                            left += 1
+                        char_set.add(s[right])
+                        max_len = max(max_len, right - left + 1)
+
+3. Optimized with HashMap O(n) -
+
+                Instead of sliding left step by step, jump it using last seen index.
+
+                Store last index of each character in visited.
+
+                If duplicate found → move left = max(left, visited[ch] + 1).
+
+                Update max length.
+
+                Code:
+                    visited = {}
+                    left, max_len = 0, 0
+
+                    for right in range(len(s)):
+                        if s[right] in visited:
+                            left = max(left, visited[s[right]] + 1)
+                        visited[s[right]] = right
+                        max_len = max(max_len, right - left + 1)
