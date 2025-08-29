@@ -1,0 +1,66 @@
+LC 905 - Sort Array by Parity
+
+Problem: Segregate 0s and 1s (or Even and Odd Numbers)
+Statement:
+
+Given an array of integers that contains only 0s and 1s, rearrange it in-place so that all 0s appear on the left and all 1s appear on the right.
+
+For the even/odd version, rearrange the array so that all even numbers appear before all odd numbers.
+
+Example 1: (0s and 1s)
+Input:  [0, 1, 1, 0, 1, 0, 0, 1]
+Output: [0, 0, 0, 0, 1, 1, 1, 1]
+
+Example 2: (Even & Odd)
+Input:  [3, 8, 5, 2, 4, 7, 6]
+Output: [8, 2, 4, 6, 3, 5, 7] 
+# (All evens on left, odds on right. Order doesn’t matter)
+
+Constraints:
+
+    Array size n ≥ 1
+
+    Values are either 0/1 OR integers where parity matters.
+
+    In-place rearrangement preferred (O(1) extra space).
+
+Approaches:
+    1. Two-pointer Method (Optimal: O(n), O(1))
+        We keep two pointers:
+
+            left → moves forward until it finds a 1 (or odd).
+
+            right → moves backward until it finds a 0 (or even).
+
+        Then we swap and continue.
+
+        Code:
+
+            def segregate(nums):
+                l, r = 0, len(nums)-1
+                if n==1:
+                    return nums
+                while l < r:
+                    while l < r and nums[l] % 2 == 0:  # 0 for binary OR even
+                        l += 1
+                    while l < r and nums[r] % 2 == 1:  # 1 for binary OR odd
+                        r -= 1
+                    if l < r:
+                        nums[l], nums[r] = nums[r], nums[l]
+                return nums
+
+    2. Counting Method (Extra Space Allowed)
+
+        Count how many 0s are there.
+
+        Fill first part with 0s, rest with 1s.
+
+        Code:
+
+            def segregate_counting(nums):
+                zeros = nums.count(0)
+                for i in range(len(nums)):
+                    nums[i] = 0 if i < zeros else 1
+                return nums
+
+        Time: O(n), Space: O(1).
