@@ -1,0 +1,158 @@
+LC 5. Longest Palindromic Substring
+
+Given a string s, return the longest palindromic substring in s.
+
+ 
+
+Example 1:
+
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+Example 2:
+
+Input: s = "cbbd"
+Output: "bb"
+
+
+Intuition:
+
+    A palindrome is mirrored around its center.
+    So, every palindrome can be expanded from its center.
+
+    A center can be one character (odd length palindrome, like "aba")
+
+    Or between two characters (even length palindrome, like "abba").
+
+    So we try expanding around each index (and between indices).
+
+
+Approach: (Expand Around Center)
+
+    Iterate through each index i.
+
+    Expand outward for odd-length palindromes (s[i] as center).
+
+    Expand outward for even-length palindromes (s[i] and s[i+1] as center).
+
+    Keep track of the longest palindrome seen.
+
+
+code:
+
+    class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        res = ""
+        res_len = 0
+
+        def expand(l,r):
+            nonlocal res, res_len
+            while(l>=0 and r<len(s) and s[l]==s[r]):
+                if len(s[l:r+1])>res_len:
+                    res = s[l:r+1]
+                    res_len = len(res)
+                l-=1
+                r+=1
+        
+        for i in range(len(s)):
+            expand(i,i)
+            expand(i,i+1)
+        
+        return res
+        
+
+Complexity:
+
+    Time: O(n²)
+    (expand takes O(n), done for n centers)
+
+    Space: O(1)
+
+
+Manacher’s Algorithm:
+
+    Key Idea
+
+        We want to avoid re-checking the same substrings again and again.
+        Manacher’s uses symmetry of palindromes around a center to reduce redundant work
+
+    
+    Step 1: Transform the String
+
+        We insert # between characters (and at boundaries) so we can treat odd and even length palindromes uniformly.
+
+        Example:
+            s = "abba" → ^#a#b#b#a#$
+            (added ^ and $ as sentinels to avoid bounds checking)
+
+        Now, every palindrome has an odd length in this new string.
+
+    Step 2: Maintain Palindrome Radius Array
+
+        We keep an array P where P[i] = radius of palindrome around center i in the transformed string.
+
+        We also maintain:
+
+            center → center of the rightmost palindrome found so far.
+
+            right → right boundary of that palindrome.
+
+    Step 3: Expand Using Symmetry
+
+        For each position i:
+
+            Find its mirror index → mirror = 2*center - i.
+
+            If i is within the current right boundary (i < right), we can use the mirror info:
+                P[i] = min(right - i, P[mirror])
+            
+            Try to expand palindrome at i beyond that.
+
+            If palindrome expands past right, update center and right
+    
+    Step 4: Find the Longest Palindrome
+
+        The max value in P tells us the radius and position of the longest palindrome.
+        Convert back to original string indices.
+
+    Code:
+
+        def longestPalindrome(s: str) -> str:
+            # Step 1: Transform
+            T = "^#" + "#".join(s) + "#$"
+            n = len(T)
+            P = [0] * n
+            center = right = 0
+            
+            # Step 2: Expand palindromes
+            for i in range(1, n - 1):
+                mirror = 2*center - i
+                if i < right:
+                    P[i] = min(right - i, P[mirror])
+                
+                # Try expanding
+                while T[i + (P[i] + 1)] == T[i - (P[i] + 1)]:
+                    P[i] += 1
+                
+                # Update center and right
+                if i + P[i] > right:
+                    center, right = i, i + P[i]
+            
+            # Step 3: Find max
+            max_len = max(P)
+            center_index = P.index(max_len)
+            
+            # Convert back to original indices
+            start = (center_index - max_len) // 2
+            return s[start: start + max_len]
+
+    Complexity:
+
+        Time: O(n)
+
+        Space: O(n)
+
+        This is the most optimal solution possible for longest palindromic substring.
+    
+
+    
