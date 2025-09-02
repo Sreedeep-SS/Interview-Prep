@@ -1,0 +1,167 @@
+Problem Statement
+
+    You are given:
+
+        One array of size n.
+
+        You need to implement k stacks using that single array efficiently (without wasting space).
+
+        Support push and pop operations for any of the k stacks.
+
+This is useful when you want to use a fixed amount of memory for multiple stacks instead of allocating separate arrays.
+
+
+Naïve Solution: (Not good)
+
+    Divide the array into k equal parts.
+
+    Stack 1 uses 0 ... n/k - 1
+
+    Stack 2 uses n/k ... 2n/k - 1
+
+    and so on.
+
+Problem: If one stack overflows but others still have space, memory is wasted.
+
+Optimized Solution: (Efficient)
+
+    We use 3 arrays:
+
+        arr[n] → Actual array to store stack elements.
+
+        top[k] → Stores the index of the top element of each stack.
+
+            top[i] = index of top element of stack i.
+
+            -1 if stack is empty.
+
+        next[n] → Helps manage free slots and linking.
+
+            Works like a "linked list" inside the array.
+
+            For free slots: it points to the next free index.
+
+            For used slots: it points to the previous element in that stack.
+
+    We also maintain a variable:
+
+        free → Points to the beginning index of the free list.
+
+
+How it Works
+    Initialization
+
+        arr[n] is empty.
+
+        top[k] = -1 (all stacks empty).
+
+        next[i] = i+1 for i=0..n-2, next[n-1] = -1 (free list).
+
+        free = 0 (first free slot is index 0).
+    
+    Push(x, sn) → Push x to stack sn
+
+        Check if free == -1 → No space (overflow).
+
+        Take index i = free.
+
+        Update free = next[i] (move free pointer).
+
+        Store element: arr[i] = x.
+
+        Link with stack: next[i] = top[sn].
+
+        Update top: top[sn] = i.
+
+    Pop(sn) → Pop from stack sn
+
+        Check if top[sn] == -1 → Empty stack (underflow).
+
+        Take index i = top[sn].
+
+        Move top: top[sn] = next[i].
+
+        Add back to free list: next[i] = free, free = i.
+
+        Return arr[i].
+
+    Example:
+
+        Let’s say n = 10, k = 3.
+
+        Push 15 in stack 2:
+
+            Free = 0 → Put 15 at arr[0].
+
+            Update top[2] = 0.
+
+            Free = 1.
+
+        Push 45 in stack 2:
+
+            Free = 1 → Put 45 at arr[1].
+
+            next[1] = 0 (previous top).
+
+            top[2] = 1.
+
+            Free = 2.
+
+        Pop from stack 2:
+
+            Top = 1 → return arr[1] = 45.
+
+            Move top[2] to next[1] = 0.
+
+            Add index 1 to free list → free = 1
+
+Complexity:
+
+    Push: O(1)
+
+    Pop: O(1)
+
+    Space: O(n + k)
+
+Code:
+
+    class KStacks:
+        def __init__(self, k, n):
+            self.k = k        # number of stacks
+            self.n = n        # size of array
+
+            self.arr = [0] * n   # actual array to store values
+            self.top = [-1] * k  # top of each stack
+            self.next = list(range(1, n)) + [-1]  # free list
+
+            self.free = 0  # first free index
+
+        def is_full(self):
+            return self.free == -1
+
+        def is_empty(self, sn):
+            return self.top[sn] == -1
+
+        def push(self, item, sn):
+            if self.is_full():
+                print("Stack Overflow")
+                return
+
+            i = self.free  # take first free index
+            self.free = self.next[i]  # update free
+
+            self.arr[i] = item
+            self.next[i] = self.top[sn]  # link new node to previous top
+            self.top[sn] = i  # update top
+
+        def pop(self, sn):
+            if self.is_empty(sn):
+                print("Stack Underflow")
+                return None
+
+            i = self.top[sn]
+            self.top[sn] = self.next[i]  # set top to previous element
+            self.next[i] = self.free  # link to free list
+            self.free = i
+
+            return self.arr[i]

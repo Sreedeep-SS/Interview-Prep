@@ -1,0 +1,67 @@
+Problem:
+Given an array nums, for each element find the next greater element on the right.
+If no such element exists, put -1
+
+Example:
+nums = [4, 5, 2, 10, 8]
+Output = [5, 10, 10, -1, -1]
+
+
+For 4 → next greater is 5
+
+For 5 → next greater is 10
+
+For 2 → next greater is 10
+
+For 10 → none → -1
+
+For 8 → none → -1
+
+Approach: Monotonic Stack (Right → Left)
+
+    We want to process from right to left and use a stack that keeps elements in decreasing order.
+
+    Steps:
+
+        Initialize an empty stack.
+
+        Traverse array from right → left:
+
+        While stack is not empty and stack.top ≤ current element → pop (since they can’t be “next greater” for anyone left).
+
+        If stack empty → answer is -1. Else → stack.top is the next greater.
+
+        Push current element onto stack.
+
+        Reverse result if you’re appending.
+
+Code:
+    def nextGreaterElements(nums):
+        n = len(nums)
+        ans = [-1] * n
+        stack = []  # will store elements in decreasing order
+        
+        for i in range(n-1, -1, -1):
+            # remove all smaller or equal elements
+            while stack and stack[-1] <= nums[i]:
+                stack.pop()
+            
+            # if stack not empty, top is the next greater
+            if stack:
+                ans[i] = stack[-1]
+            
+            # push current element
+            stack.append(nums[i])
+        
+        return ans
+
+
+    print(nextGreaterElements([4, 5, 2, 10, 8]))
+    # Output: [5, 10, 10, -1, -1]
+
+
+Time Complexity:
+
+    Each element pushed/popped at most once → O(n).
+
+    Space: O(n) for stack + result.
