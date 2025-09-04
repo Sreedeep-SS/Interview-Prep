@@ -1,0 +1,71 @@
+Binary Tree Preorder Traversal
+
+
+Recursive Approach:
+
+    This is the most natural, since preorder is just:
+
+        Visit root
+
+        Recurse on left
+
+        Recurse on right
+
+
+Code:
+
+    class Solution:
+        def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+            res = []
+            
+            def dfs(node):
+                if not node:
+                    return
+                res.append(node.val)   # root
+                dfs(node.left)         # left
+                dfs(node.right)        # right
+            
+            dfs(root)
+            return res
+
+Iterative Approach (Using Stack):
+
+    We mimic recursion with a stack.
+
+    Steps:
+
+        Push root → stack
+
+        While stack not empty:
+
+            Pop node, visit it
+
+            Push right child first, then left (so left is processed first).
+
+
+Code:
+
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
+        
+        res, stack = [], [root]
+        
+        while stack:
+            node = stack.pop()
+            res.append(node.val)  # root
+            
+            if node.right:        # push right first
+                stack.append(node.right)
+            if node.left:         # then left
+                stack.append(node.left)
+        
+        return res
+
+
+Complexity:
+
+    Time: O(n) (visit each node once)
+
+    Space: O(h) (stack recursion depth or explicit stack), worst case O(n) for skewed tree.

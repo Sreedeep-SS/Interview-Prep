@@ -1,0 +1,79 @@
+LC 94. Binary Tree Inorder Traversal
+
+Given the root of a binary tree, return the inorder traversal of its nodes' values.
+
+Idea:
+
+    Normally, inorder = Left → Root → Right.
+
+    Problem: recursion/stack is needed to "come back" after going left.
+
+    Morris solves this by temporarily modifying the tree (creating “threads”) to remember how to come back.
+
+
+Approach 1 – Recursive (DFS)
+
+    This is the most natural way.
+
+    Code:
+        class Solution:
+            def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+                res = []
+                
+                def dfs(node):
+                    if not node:
+                        return
+                    dfs(node.left)      # left
+                    res.append(node.val) # root
+                    dfs(node.right)     # right
+                
+                dfs(root)
+                return res
+
+    Time = O(n)
+    Space = O(h) (recursion stack, h = height of tree).
+
+
+Approach 2 – Iterative (using stack)
+
+    We simulate recursion with our own stack.
+
+    Algorithm:
+
+        Initialize empty stack, result list.
+
+        Start from root.
+
+        While stack not empty OR current node not null:
+
+        Keep going left (push nodes onto stack).
+
+        When left is null → pop from stack → visit node → go right.
+
+        Continue until done.
+
+    Code:
+        class Solution:
+            def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+                res, stack = [], []
+                curr = root
+                
+                while curr or stack:
+                    while curr:
+                        stack.append(curr)   # go left
+                        curr = curr.left
+                    curr = stack.pop()
+                    res.append(curr.val)     # visit root
+                    curr = curr.right        # go right
+                
+                return res
+
+
+    Time = O(n)
+    Space = O(h) (stack height, h = tree depth).
+
+
+    
+
+
+

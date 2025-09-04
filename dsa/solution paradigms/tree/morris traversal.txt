@@ -1,0 +1,68 @@
+Morris Traversal is a clever way to do inorder traversal without recursion or a stack — i.e. O(1) extra space.
+
+Idea:
+
+    Normally, inorder = Left → Root → Right.
+
+    Problem: recursion/stack is needed to "come back" after going left.
+
+    Morris solves this by temporarily modifying the tree (creating “threads”) to remember how to come back.
+
+
+Algorithm:
+
+    For each node curr:
+
+        If curr.left is None:
+            → Visit curr
+            → Move to curr.right.
+
+        Else (there is a left child):
+
+            Find predecessor = rightmost node in curr.left subtree.
+
+            If predecessor.right is None:
+                → Set predecessor.right = curr (thread back to curr)
+                → Move curr = curr.left.
+
+            Else (predecessor.right == curr):
+                → Restore predecessor.right = None (remove thread)
+                → Visit curr
+                → Move curr = curr.right.
+
+    Continue until curr == None.
+
+
+Code:
+    class Solution:
+        def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+            res = []
+            curr = root
+            
+            while curr:
+                if curr.left is None:
+                    res.append(curr.val)
+                    curr = curr.right
+                else:
+                    # find inorder predecessor
+                    pre = curr.left
+                    while pre.right and pre.right != curr:
+                        pre = pre.right
+                    
+                    if pre.right is None:  # create thread
+                        pre.right = curr
+                        curr = curr.left
+                    else:  # remove thread
+                        pre.right = None
+                        res.append(curr.val)
+                        curr = curr.right
+            return res
+
+
+Complexity
+
+⏱ Time = O(n) (each edge visited at most twice).
+
+📦 Space = O(1) (no recursion, no stack).
+
+✅ Tree structure restored (no permanent modification).
