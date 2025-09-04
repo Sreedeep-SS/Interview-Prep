@@ -1,0 +1,90 @@
+LC 32. Longest Valid Parentheses
+
+Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.
+
+ 
+
+Example 1:
+
+Input: s = "(()"
+Output: 2
+Explanation: The longest valid parentheses substring is "()".
+Example 2:
+
+Input: s = ")()())"
+Output: 4
+Explanation: The longest valid parentheses substring is "()()".
+Example 3:
+
+Input: s = ""
+Output: 0
+ 
+
+Constraints:
+
+0 <= s.length <= 3 * 104
+s[i] is '(', or ')'.
+
+Approach:
+    We use a stack to keep indices (not characters).
+    Why? → To measure valid substring lengths.
+
+Algorithm:
+
+    1. Initialize a stack with -1 (base for length calculation).
+
+        If string starts with ), this avoids index underflow.
+
+    2. Traverse string:
+
+        If '(', push index to stack.
+
+        If ')', pop from stack:
+
+            If stack becomes empty → push current index (new base).
+
+            Else, length = current_index - stack[-1] → update maxLen.
+
+    3. Return maxLen.
+
+Code:
+
+    class Solution:
+        def longestValidParentheses(self, s: str) -> int:
+            stack = [-1]
+            max_len = 0
+
+            for i, n in enumerate(s):
+                if n == '(':
+                    stack.append(i)
+                else:
+                    stack.pop()
+                    if not stack:
+                        stack.append(i)
+                    else:
+                        max_len = max(max_len, i - stack[-1])
+            return max_len
+
+Dry Run (Example: ")()())"):
+
+    Start: stack = [-1]
+
+    i=0 ) → pop → stack empty → push(0) → stack=[0]
+
+    i=1 ( → push(1) → stack=[0,1]
+
+    i=2 ) → pop(1) → stack=[0] → length=2-0=2 → max_len=2
+
+    i=3 ( → push(3) → stack=[0,3]
+
+    i=4 ) → pop(3) → stack=[0] → length=4-0=4 → max_len=4
+
+    i=5 ) → pop(0) → empty → push(5) → stack=[5]
+    ✅ Answer = 4
+
+
+Time & Space
+
+    Time = O(n) (single scan).
+
+    Space = O(n) (stack).
