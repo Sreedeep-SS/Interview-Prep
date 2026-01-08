@@ -1,0 +1,2 @@
+- It provides isolated networking
+- Used for secure communication between services

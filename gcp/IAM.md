@@ -1,0 +1,2 @@
+- It's for access control
+- Used to define roles for who can access GCP services

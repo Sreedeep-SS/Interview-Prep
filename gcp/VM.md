@@ -1,0 +1,2 @@
+- it's a virtual machine like AWS EC2
+- Used for compute workloads where containers aren’t ideal

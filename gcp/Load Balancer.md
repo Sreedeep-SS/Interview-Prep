@@ -1,0 +1,2 @@
+- It distributes traffic
+- Used for balancing load across replicas of services

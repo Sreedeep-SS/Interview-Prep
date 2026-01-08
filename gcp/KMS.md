@@ -1,0 +1,2 @@
+- Used for secure key storage
+- Encrypts sensitive tokens like API keys and service credentials
